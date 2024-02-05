@@ -1,8 +1,8 @@
 class Node {
-    constructor(head) {
+    constructor(head, leftChild = null, rightChild = null) {
       this.head = head
-      this.leftChild
-      this.rightChild
+      this.leftChild = leftChild
+      this.rightChild = rightChild
     }
   }
   
@@ -22,6 +22,20 @@ class Tree {
       })
       return withoutDuplicates
     }
+    insert(value, current = this.root) {
+        if (value < current.head) {
+            if (!current.leftChild) current.leftChild = new Node(value)
+            else {
+                this.insert(value, current.leftChild)
+            }
+        }
+        if (value > current.head) {
+            if (!current.rightChild) current.rightChild = new Node(value)
+            else {
+                this.insert(value, current.rightChild)
+            }
+        }
+    }
 }
 
   function buildTree(array, start, end) {
@@ -39,8 +53,10 @@ class Tree {
   
   const initialArray = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324, 34, 11, 2, 150]
   const tree = new Tree(initialArray)
+  tree.insert(6)
+  console.log(tree.root.leftChild)
   
-//checking with the function prettyPrint
+//check with the function prettyPrint()
 const prettyPrint = (node, prefix = "", isLeft = true) => {
     if (node === null) {
       return;
