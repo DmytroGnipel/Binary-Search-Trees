@@ -66,18 +66,60 @@ class Tree {
     current.head = findMin(current)//assign the min value of the right branch to current node
     }//and unfairly remove the old node wit same value
 
-  function findMin (root) {
-    let previous = root
-    let current = root.rightChild
-    while (current.leftChild) {
-      previous = current
-      current = current.leftChild
+    function findMin (root) {
+      let previous = root
+      let current = root.rightChild
+      while (current.leftChild) {
+        previous = current
+        current = current.leftChild
+      }
+      previous.leftChild = null//delete node with min value
+      return current.head//return min value
     }
-    previous.leftChild = null//delete node with min value
-    return current.head//return min value
+  }
+  
+  find(value, current = this.root) {
+    if (current.head === value) return current
+    if (current.head < value && current.rightChild) 
+    return this.find(value, current.rightChild)
+    if (current.head > value && current.leftChild)
+    return this.find(value, current.leftChild)
+  else return 'there is no nodes with such data'
+  }
+
+  levelOrderIter(callback) {
+    const array = []
+    const queue = [this.root]
+    while (queue.length) {
+      callback ? callback(queue[0].head) : array.push(queue[0].head)
+      if (queue[0].leftChild) queue.push(queue[0].leftChild)
+      if (queue[0].rightChild) queue.push(queue[0].rightChild)
+      queue.shift()
+    }
+    if (!callback) return array
+  }
+
+  levelOrderRec(callback) {
+    const array = []
+    const queue = [this.root]
+    const recursion = () => {
+      if (!queue.length) return
+      callback ? callback(queue[0].head) : array.push(queue[0].head)
+      if (queue[0].leftChild) queue.push(queue[0].leftChild)
+      if (queue[0].rightChild) queue.push(queue[0].rightChild)
+      queue.shift()
+      recursion()
+    }
+    recursion()
+    if (!callback) return array
   }
 }
+
+function print (number) {
+console.log(number)
 }
+
+
 
   function buildTree(array, start, end) {
     //base condition
@@ -92,16 +134,29 @@ class Tree {
   return node
   }
   
-  const initialArray = [7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324, 34, 11, 2, 150]
+  const initialArray = [7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 324, 34, 11, 2, 150]
   const tree = new Tree(initialArray)
 
-  tree.delete(67, tree.root)
+  //tree.delete(67, tree.root)
   
   //console.log(tree.root.leftChild)
 
   //console.log(tree.root.leftChild)
  
-  
+  //console.log(tree.find(34))
+
+  /*tree.levelOrderIter(number => {
+    console.log(number)
+  })*/
+
+  //console.log(tree.levelOrderIter())
+
+  tree.levelOrderRec((number) => {
+    console.log(number)
+  })
+
+  console.log(tree.levelOrderRec())
+
 //check with the function prettyPrint()
 const prettyPrint = (node, prefix = "", isLeft = true) => {
     if (node === null) {
