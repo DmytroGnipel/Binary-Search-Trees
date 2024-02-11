@@ -113,29 +113,59 @@ class Tree {
     recursion()
     if (!callback) return array
   }
-}
 
-function print (number) {
-console.log(number)
-}
-
-
-
-  function buildTree(array, start, end) {
-    //base condition
-    if (end < start) return null
-    //get migPoint
-    const midPointIndex = parseInt((end + start) / 2)
-    const midPoint = array[midPointIndex]
-    //get node and tree
-    const node = new Node(midPoint)
-    node.leftChild = buildTree(array, start, midPointIndex - 1)
-    node.rightChild = buildTree(array, midPointIndex + 1, end)
-  return node
+  inOrder(callback) {
+    const arrayOfValues = []
+    const recursion = (current) => {
+      if (!current) return
+      recursion(current.leftChild)
+      callback ? callback(current.head) : arrayOfValues.push(current.head)
+      recursion(current.rightChild)
+    }
+    recursion(this.root)
+    if (!callback) return arrayOfValues
   }
+
+  preOrder(callback) {
+    const arrayOfValues = []
+    const recursion = (current) => {
+      if (!current) return
+      callback ? callback(current.head) : arrayOfValues.push(current.head)
+      recursion(current.leftChild)
+      recursion(current.rightChild)
+    }
+    recursion(this.root)
+    if (!callback) return arrayOfValues
+  }
+
+  postOrder(callback) {
+    const arrayOfValues = []
+    const recursion = (current) => {
+      if (!current) return
+      recursion(current.rightChild)
+      recursion(current.leftChild)
+      callback ? callback(current.head) : arrayOfValues.push(current.head)
+    }
+    recursion(this.root)
+    if (!callback) return arrayOfValues
+  }
+}
+
+function buildTree(array, start, end) {
+  //base condition
+  if (end < start) return null
+  //get migPoint
+  const midPointIndex = parseInt((end + start) / 2)
+  const midPoint = array[midPointIndex]
+  //get node and tree
+  const node = new Node(midPoint)
+  node.leftChild = buildTree(array, start, midPointIndex - 1)
+  node.rightChild = buildTree(array, midPointIndex + 1, end)
+return node
+}
   
-  const initialArray = [7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 324, 34, 11, 2, 150]
-  const tree = new Tree(initialArray)
+const initialArray = [7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 324, 34, 11, 2, 150]
+const tree = new Tree(initialArray)
 
   //tree.delete(67, tree.root)
   
@@ -151,11 +181,27 @@ console.log(number)
 
   //console.log(tree.levelOrderIter())
 
-  tree.levelOrderRec((number) => {
+  /*tree.levelOrderRec((number) => {
     console.log(number)
-  })
+  })*/
 
-  console.log(tree.levelOrderRec())
+//console.log(tree.preOrder())
+
+/*tree.preOrder((node) => {
+  console.log(node)
+})*/
+
+//console.log(tree.inOrder())
+
+/*tree.inOrder((node) => {
+console.log(node)
+})*/
+
+/*console.log(tree.postOrder())
+tree.postOrder((node) => {
+  console.log(node)
+})*/
+
 
 //check with the function prettyPrint()
 const prettyPrint = (node, prefix = "", isLeft = true) => {
@@ -171,7 +217,7 @@ const prettyPrint = (node, prefix = "", isLeft = true) => {
     }
 }
 
-prettyPrint(tree.root)
+//prettyPrint(tree.root)
 
 
 
