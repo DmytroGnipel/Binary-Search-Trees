@@ -1,3 +1,4 @@
+//create class for creating new nodes
 class Node {
   constructor(head, leftChild = null, rightChild = null) {
     this.head = head
@@ -5,7 +6,7 @@ class Node {
     this.rightChild = rightChild
   }
 }
-
+//create class for creating new trees
 class Tree {
   #array
   #processedArray
@@ -64,7 +65,7 @@ class Tree {
     }
     else {//when both children exist
     current.head = findMin(current)//assign the min value of the right branch to current node
-    }//and unfairly remove the old node wit same value
+    }//and remove the old node wit same value
 
     function findMin (root) {
       let previous = root
@@ -142,16 +143,53 @@ class Tree {
     const arrayOfValues = []
     const recursion = (current) => {
       if (!current) return
-      recursion(current.rightChild)
       recursion(current.leftChild)
+      recursion(current.rightChild)
       callback ? callback(current.head) : arrayOfValues.push(current.head)
     }
     recursion(this.root)
     if (!callback) return arrayOfValues
   }
-}
 
-function buildTree(array, start, end) {
+  height(node) {
+    if (!node) return 0
+    const leftChild = this.height(node.leftChild)
+    const rightChild = this.height(node.rightChild)
+    if (leftChild > rightChild) return leftChild + 1
+    else return rightChild + 1
+  }
+
+  depth (value) {
+    const recursion = (node) => {
+      if (!node) return
+      if (node === value) return 1
+      const leftChild = recursion(node.leftChild)
+      const rightChild = recursion(node.rightChild)
+      if (leftChild) return leftChild + 1
+      else if (rightChild) return rightChild + 1
+    }
+  return recursion(this.root) ?? 'there is no such node in the tree'
+  }
+
+  isBalanced(node = this.root) {
+    if (!node) return true
+  const leftHeight = this.height(node.leftChild)
+  const rightHeight = this.height(node.rightChild)
+  const difference = Math.abs(leftHeight - rightHeight)
+  if (difference > 1) return false
+  if (this.isBalanced(node.leftChild) && this.isBalanced(node.rightChild)) return true
+  if (!this.isBalanced(node.leftChild) || !this.isBalanced(node.rightChild)) return false
+  }
+  
+  rebalance() {
+    const array = this.preOrder()//gather all values of unbalanced tree in array
+    this.#array = array//in order to use function #processArray define array as this.#array
+    const processed = this.#processArray(this.#array)//get sorted array
+    this.root = buildTree(processed)//change unbalanced root to balanced
+  }
+}
+//build root from ordinary array
+function buildTree(array, start = 0, end = array.length - 1) {
   //base condition
   if (end < start) return null
   //get migPoint
@@ -163,47 +201,7 @@ function buildTree(array, start, end) {
   node.rightChild = buildTree(array, midPointIndex + 1, end)
 return node
 }
-  
-const initialArray = [7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 324, 34, 11, 2, 150]
-const tree = new Tree(initialArray)
-
-  //tree.delete(67, tree.root)
-  
-  //console.log(tree.root.leftChild)
-
-  //console.log(tree.root.leftChild)
- 
-  //console.log(tree.find(34))
-
-  /*tree.levelOrderIter(number => {
-    console.log(number)
-  })*/
-
-  //console.log(tree.levelOrderIter())
-
-  /*tree.levelOrderRec((number) => {
-    console.log(number)
-  })*/
-
-//console.log(tree.preOrder())
-
-/*tree.preOrder((node) => {
-  console.log(node)
-})*/
-
-//console.log(tree.inOrder())
-
-/*tree.inOrder((node) => {
-console.log(node)
-})*/
-
-/*console.log(tree.postOrder())
-tree.postOrder((node) => {
-  console.log(node)
-})*/
-
-
-//check with the function prettyPrint()
+//this function graphically renders array
 const prettyPrint = (node, prefix = "", isLeft = true) => {
     if (node === null) {
       return;
@@ -216,20 +214,71 @@ const prettyPrint = (node, prefix = "", isLeft = true) => {
       prettyPrint(node.leftChild, `${prefix}${isLeft ? "    " : "│   "}`, true);
     }
 }
+//Tie it all together
 
-//prettyPrint(tree.root)
+//create function that returns an array of random numbers
+function rundomArray(amount) {
+  const array = []
+  while (amount) {
+    array.push(Math.floor(Math.random() * 99) + 1)
+    amount -= 1
+  }
+return array
+}
+//create tree from array with the help of function rundomArray()
+const myTree = new Tree(rundomArray(10))
+//confirm that the tree is balanced by calling isBalanced()
+console.log(myTree.isBalanced())//true
+//print out all elements in level order with the help of iterrative...
+myTree.levelOrderIter((number) => {
+  console.log(number)
+})
+//... and recursive functions
+myTree.levelOrderRec((number) => {
+  console.log(number)
+})
+//preorder
+myTree.preOrder((number) => {
+  console.log(number)
+})
+//inorder
+myTree.inOrder((number) => {
+  console.log(number)
+})
+//postorder
+myTree.postOrder((number) => {
+  console.log(number)
+})
+//unbalance the tree by adding several numbers > 100
+const firstUnbalanced = new Node(105)//create node for unbalancing (parent nod)
+const secondUnbalanced = new Node(125)//create child node
+firstUnbalanced.rightChild = secondUnbalanced//put child in parent
+myTree.root.rightChild.rightChild.rightChild.rightChild = firstUnbalanced//put parent node into balanced node so later become unbalanced
+//check if myTree node actually unbalanced
+console.log(myTree.isBalanced())//false
+//balance the tree by calling rebalance
+myTree.rebalance()
+//check if myTree node actually balanced now
+console.log(myTree.isBalanced())//true
 
-
-
-
-
-
-  
-  
-  
-    
-
-  
-  
-  
-  
+//one more time print out all elements in level order with the help of iterrative...
+myTree.levelOrderIter((number) => {
+  console.log(number)
+})
+//... and recursive functions
+myTree.levelOrderRec((number) => {
+  console.log(number)
+})
+//preorder
+myTree.preOrder((number) => {
+  console.log(number)
+})
+//inorder
+myTree.inOrder((number) => {
+  console.log(number)
+})
+//postorder
+myTree.postOrder((number) => {
+  console.log(number)
+})
+//end
